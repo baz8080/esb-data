@@ -1,0 +1,5 @@
+esb.db
+esb.db-wal
+esb.db-shm
+.poll.lock
+.write-test
