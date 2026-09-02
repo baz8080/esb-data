@@ -1,0 +1,24 @@
+name: Rebuild the site
+
+# The published site is only ever as current as the last push here, and the cron
+# in baz8080/esb cannot be relied on to notice one: scheduled runs there have
+# been starting 4-10 hours after their cron time. Asking for the build directly
+# gets it within a minute of the data landing.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      # A fine-grained token with Actions: write on baz8080/esb, stored here as
+      # SITE_BUILD_TOKEN. workflow_dispatch rather than repository_dispatch
+      # because that one would need Contents: write to do the same job.
+      - env:
+          GH_TOKEN: ${{ secrets.SITE_BUILD_TOKEN }}
+        run: |
+          gh api -X POST \
+            repos/baz8080/esb/actions/workflows/pages.yml/dispatches \
+            -f ref=main
